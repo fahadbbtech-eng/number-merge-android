@@ -1,1 +1,4 @@
-test
+<resources>
+  <style name="Theme.NumberMerge" parent="Theme.AppCompat.NoActionBar">
+  </style>
+</resources>
