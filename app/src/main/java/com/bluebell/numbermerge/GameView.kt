@@ -26,6 +26,11 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
   private var startX = 0f
   private var startY = 0f
 
+  private var animRow = -1
+  private var animCol = -1
+  private var animTicks = 0
+  private val animMaxTicks = 6
+
   private val paint = Paint().apply { isAntiAlias = true }
 
   init {
@@ -49,8 +54,9 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
 
   override fun run() {
     while (isPlaying) {
+      if (animTicks > 0) animTicks--
       draw()
-      Thread.sleep(50)
+      Thread.sleep(30)
     }
   }
 
@@ -64,6 +70,9 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
     if (empty.isEmpty()) return
     val (r, c) = empty[Random.nextInt(empty.size)]
     grid[r][c] = if (Random.nextFloat() < 0.9f) 2 else 4
+    animRow = r
+    animCol = c
+    animTicks = animMaxTicks
   }
 
   private fun canMove(): Boolean {
@@ -174,8 +183,22 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
         val value = grid[r][c]
         val x = left + c * cell + 8
         val y = boardTop + r * cell + 8
+        var w = cell - 16
+        var h = cell - 16
+        var dx = x
+        var dy = y
+        if (r == animRow && c == animCol && animTicks > 0) {
+          val progress = 1f - (animTicks.toFloat() / animMaxTicks.toFloat())
+          val scale = 0.5f + 0.5f * progress
+          val newW = w * scale
+          val newH = h * scale
+          dx = x + (w - newW) / 2
+          dy = y + (h - newH) / 2
+          w = newW
+          h = newH
+        }
         paint.color = tileColor(value)
-        canvas.drawRect(x, y, x + cell - 16, y + cell - 16, paint)
+        canvas.drawRect(dx, dy, dx + w, dy + h, paint)
         if (value != 0) {
           paint.color = if (value <= 4) Color.rgb(90, 85, 75) else Color.WHITE
           paint.textSize = 50f
