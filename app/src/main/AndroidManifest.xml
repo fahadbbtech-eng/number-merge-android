@@ -5,7 +5,7 @@
     android:allowBackup="true"
     android:label="Number Merge"
     android:theme="@style/Theme.NumberMerge"
-    android:icon="@android:drawable/ic_menu_gallery">
+    android:icon="@drawable/numbermergeicon512">
 
     <activity
       android:name=".MainActivity"
